@@ -28,4 +28,4 @@ jobs:
         uses: @github/actions/upload-artifact@latest  # Korištenje najnovije verzije
         with:
           name: registration-logs
-          path: output.log  # Upload log file as artifact
+          path: output.log  # Upload log file as artifactt
