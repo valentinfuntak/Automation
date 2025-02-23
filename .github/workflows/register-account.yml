@@ -2,7 +2,7 @@ name: Automatska registracija Google računa
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Za ljetno vrijeme (CEST, UTC+2) - 6:00 UTC
+    - cron: '0 6 * * *'  # Pokreće se svaki dan u 6:00 UTC (8:00 CEST)
 
 jobs:
   register:
@@ -22,5 +22,3 @@ jobs:
 
       - name: Run registration script
         run: node src/Auto/register-account.js
-      
-      
