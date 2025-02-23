@@ -25,7 +25,14 @@ jobs:
         run: node src/Auto/register-account.js > output.log  # Sprema logove u output.log
 
       - name: Upload log artifact
-        uses: actions/upload-artifact@v3  # Najnovija podržana verzija upload-artifact
+        uses: actions/upload-artifact@v3  # Upload artefakta
         with:
           name: registration-logs
           path: output.log  # Upload log file as artifact
+
+      - name: Download log artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: registration-logs  # Ime artefakta za preuzimanje
+          path: ./logs  # Odredi put za pohranu artefakta
+          merge-multiple: false  # Ponašanje u slučaju više artefakata
