@@ -11,8 +11,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "vite": "^6.0.0",
-    "vite-plugin-solid": "^2.11.1"
+    "vite": ">=6.0.9",
+    "vite-plugin-solid": "^2.11.1",
+    "esbuild": ">=0.25.0"
   },
   "dependencies": {
     "@solidjs/router": "^0.15.3",
