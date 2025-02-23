@@ -25,5 +25,11 @@ jobs:
         run: node src/Auto/register-account.js
 
       - name: Save logs (optional)
-        run: Get-Content output.log
+        run: |
+          if (Test-Path "output.log") {
+            Get-Content "output.log"
+          } else {
+            echo "Log file not found."
+          }
+      
       
