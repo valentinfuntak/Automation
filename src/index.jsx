@@ -1,5 +1,6 @@
 import { render } from 'solid-js/web';
 import './index.css';
+import 'flowbite';
 
 import App from './App';
 

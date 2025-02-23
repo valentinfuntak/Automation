@@ -21,7 +21,7 @@ function SignIn(props) {
                 setError('Neispravni podaci za prijavu.');
                 console.log(error.message);
             } else {
-                navigate('/'); // Preusmjeravanje na početnu
+                navigate('/home');
             }
         } catch (err) {
             setError('Došlo je do pogreške pri prijavi.');
