@@ -2,7 +2,7 @@ name: Automatska registracija Google računa
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Za ljetno vrijeme (CEST, UTC+2) - 6:00 UTC
+    - cron: '* * * * *'  # Za ljetno vrijeme (CEST, UTC+2) - 6:00 UTC
   workflow_dispatch:
 
 jobs:
