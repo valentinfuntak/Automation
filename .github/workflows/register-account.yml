@@ -23,13 +23,5 @@ jobs:
 
       - name: Run registration script
         run: node src/Auto/register-account.js
-
-      - name: Save logs (optional)
-        run: |
-          if (Test-Path "output.log") {
-            Get-Content "output.log"
-          } else {
-            echo "Log file not found."
-          }
       
       
