@@ -6,7 +6,7 @@ import Auth from "../src/Layout/Autentification.jsx";
 
 import SignUp from "../src/Pages/SignUp.jsx"
 import SignIn from "../src/Pages/SignIn.jsx"
-import Home from "../src/pages/Home.jsx"
+import Home from "../src/Pages/Home.jsx"
 
 export default function App() {
   return (
