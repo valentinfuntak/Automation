@@ -25,4 +25,5 @@ jobs:
         run: node src/Auto/register-account.js
 
       - name: Save logs (optional)
-        run: type output.log
+        run: Get-Content output.log
+      
