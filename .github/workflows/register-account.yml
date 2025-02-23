@@ -7,7 +7,7 @@ on:
 
 jobs:
   register:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run registration script and log output
-        run: node src/Auto/register-account.js > output.log  # Sprema logove u output.log
+      - name: Run registration script
+        run: node src/Auto/register-account.js
 
-      - name: Display logs
-        run: cat output.log  # Prikazivanje logova u GitHub Actions
+      - name: Save logs (optional)
+        run: type output.log
