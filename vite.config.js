@@ -13,5 +13,5 @@ export default defineConfig({
   build: {
     target: 'esnext',
   },
-  base: process.env.NODE_ENV === "production" ? "/Automatization/" : "/"
+  base: process.env.NODE_ENV === "production" ? "/Automation/" : "/"
 });
