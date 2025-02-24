@@ -1,4 +1,11 @@
+import { useAuth } from "../Auth/AuthProvider.jsx";
+
 export default function Home() {
+
+  const session = useAuth();
+
+  console.log(session());
+
   return (
     <>
       <div className="max-h-screen bg-gray-700 rounded-xl p-2 flex flex-col items-start justify-start text-center">
