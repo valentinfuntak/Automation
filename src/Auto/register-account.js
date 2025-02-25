@@ -15,13 +15,15 @@ async function getPendingAccounts() {
     const { data, error } = await supabase
         .from('AccountData')
         .select('*')
-        .eq('registered', false);
+        .eq('registered', false)
+        .limit(1)
+        .single(); // Uzima samo jedan zapis
     if (error) {
         console.error('⚠️ Greška pri dohvaćanju računa:', error);
     } else {
         setPendingAccounts(data);
         console.log(`Dohvaćeni računi: ${data.length}`);
-        console.log(`Dohvaćeni računi:`,pendingAccounts());
+        console.log(`Dohvaćeni računi:`, pendingAccounts());
         return data;
     }
 }
@@ -107,15 +109,11 @@ async function main() {
     try {
         console.log("Započinjem dohvat računa koji čekaju registraciju...");
 
-        const accounts = await getPendingAccounts();
-
-        if (accounts.length > 0) {
-            // Registriraj sve račune koji čekaju
-            for (const account of accounts) {
-                await registerAccount(account);
-            }
+        const account = await getPendingAccount();
+        if (account) {
+            await registerAccount(account);
         } else {
-            console.log("Nema računa koji čekaju registraciju.");
+            console.log("Nema dostupnih računa za registraciju.");
         }
     } catch (err) {
         console.error("❌ Greška u glavnoj funkciji:", err);
