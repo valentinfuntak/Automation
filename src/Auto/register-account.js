@@ -44,7 +44,9 @@ async function registerAccount(account) {
         await page.click('#collectNameNext > div > button > span');
 
         // Daljnje popunjavanje (prema vašim uputama za inpute)
-        await page.type('#month', account.month, { delay: 100 });
+        await page.waitForSelector('#month');
+        await page.select('#month', '2');  // Odabir veljače
+
         await page.type('#day', account.day, { delay: 100 });
         await page.type('#year', account.year, { delay: 100 });
         await page.select('#gender', account.gender);
