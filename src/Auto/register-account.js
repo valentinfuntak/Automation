@@ -92,7 +92,6 @@ async function registerAccount(account) {
             .from('AccountData')
             .update({ registered: true })
             .eq('id', account.id);
-
         if (error) {
             console.error(`⚠️ Greška pri ažuriranju statusa za ${account.firstName}:`, error);
         } else {
