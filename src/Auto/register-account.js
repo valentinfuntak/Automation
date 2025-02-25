@@ -1,98 +1,119 @@
 import puppeteer from 'puppeteer';
+import { createClient } from '@supabase/supabase-js';
+import { createSignal } from 'solid-js';
+import readline from 'readline';
 
-const browser = await puppeteer.launch({
-    headless: false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']  // Dodaj ove argumente
-});
+// Supabase klijent
+const supabase = createClient("https://zwlnmgzochrpsrchtzse.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3bG5tZ3pvY2hycHNyY2h0enNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNzEzMTIsImV4cCI6MjA1NTc0NzMxMn0.zy3xpi7HVpQqrRdXuoPt6ZymK9s9ioAF5OiJIYzf3OM");
 
-const page = await browser.newPage();
+const [pendingAccounts, setPendingAccounts] = createSignal([]);
 
-// Navigate the page to a URL.
-await page.goto('https://accounts.google.com/signup');
-
-// Set screen size.
-await page.setViewport({ width: 1080, height: 1024 });
-
-// Simuliraj tipkanje za "Ime" s kašnjenjem između svakog slova
-await page.type('#firstName', 'Ime', { delay: 100 });
-await page.type('#lastName', 'Prezime', { delay: 100 });
-
-console.log('Ime i Prezime su upisani.');
-
-await page.click('#collectNameNext > div > button > span');
-
-await browser.close();
-
-
-{/*
-PRIMJENITI OVAJ KOD 
-
-const { createClient } = require('@supabase/supabase-js');
-const puppeteer = require('puppeteer');
-
-// Povezivanje s Supabase
-const supabase = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY');
-
-// Funkcija za dohvat računa koji još nisu registrirani
+// Dohvati račune koji još nisu registrirani
 async function getPendingAccounts() {
+    console.log("Pokušavam dohvatiti račune iz Supabase...");
     const { data, error } = await supabase
-        .from('accounts') // Naziv vaše tablice
+        .from('AccountData')
         .select('*')
-        .eq('Registriran', false); // Filtriraj samo one koji nisu registrirani
-
+        .eq('registered', false);
     if (error) {
-        console.error('Error fetching accounts:', error);
-        return [];
-    }
-    return data;
-}
-
-// Funkcija za registraciju računa pomoću Puppeteera
-async function registerAccount(account) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    // Pristupite stranici za registraciju
-    await page.goto('https://example.com/register'); // Zamijenite s pravom URL adresom za registraciju
-
-    // Popunite formu s podacima o računu
-    await page.type('#username', account.username);
-    await page.type('#email', account.email);
-    await page.type('#password', account.password);
-
-    // Pošaljite formu
-    await page.click('#registerButton');
-    await page.waitForNavigation();
-
-    console.log(`Account ${account.username} registered`);
-
-    await browser.close();
-}
-
-// Funkcija za ažuriranje statusa računa u Supabase nakon uspješne registracije
-async function updateAccountStatus(accountId) {
-    const { error } = await supabase
-        .from('accounts')
-        .update({ Registriran: true }) // Postavljanje samo vrijednosti Registriran na true
-        .eq('id', accountId); // Filtriramo prema id-u računa
-
-    if (error) {
-        console.error('Error updating account status:', error);
+        console.error('⚠️ Greška pri dohvaćanju računa:', error);
     } else {
-        console.log(`Account with id ${accountId} marked as registered`);
+        setPendingAccounts(data);
+        console.log(`Dohvaćeni računi: ${data.length}`);
+        return data;
     }
 }
 
-// Glavna funkcija koja povezuje sve
-async function main() {
-    const accounts = await getPendingAccounts(); // Dohvati nepodignute račune
+// Registracija računa pomoću Puppeteera
+async function registerAccount(account) {
+    try {
+        console.log(`Započinjem registraciju računa: ${account.firstName} ${account.lastName}`);
 
-    for (let account of accounts) {
-        await registerAccount(account); // Registriraj račun
-        await updateAccountStatus(account.id); // Ažuriraj status na "registriran"
+        const browser = await puppeteer.launch({
+            headless: false,
+            executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+        });
+
+        const page = await browser.newPage();
+        await page.goto('https://accounts.google.com/signup');
+        await page.setViewport({ width: 1080, height: 1024 });
+
+        // Popunjavanje podataka
+        await page.type('#firstName', account.firstName, { delay: 100 });
+        await page.type('#lastName', account.lastName, { delay: 100 });
+        await page.click('#collectNameNext > div > button > span');
+
+        // Daljnje popunjavanje (prema vašim uputama za inpute)
+        await page.type('#month', account.month, { delay: 100 });
+        await page.type('#day', account.day, { delay: 100 });
+        await page.type('#year', account.year, { delay: 100 });
+        await page.select('#gender', account.gender);
+
+        await page.click('#birthdaygenderNext > div > button > span');
+
+        // Nastavite s popunjavanjem ostalih podataka (koristite slične metode za unos)
+
+        console.log(`Račun ${account.firstName} ${account.lastName} uspješno registriran.`);
+
+        await browser.close();
+
+        // Ažuriraj status u bazi podataka
+        const { error } = await supabase
+            .from('AccountData')
+            .update({ registered: true })
+            .eq('id', account.id);
+
+        if (error) {
+            console.error(`⚠️ Greška pri ažuriranju statusa za ${account.firstName}:`, error);
+        } else {
+            console.log(`Status za račun ${account.firstName} ažuriran na 'registered'.`);
+        }
+    } catch (err) {
+        console.error('❌ Greška pri registraciji računa:', err);
+    }
+}
+
+// Funkcija za unos broja računa koji korisnik želi registrirati
+function askForAccountCount() {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    return new Promise((resolve) => {
+        rl.question("Koliko računa želite registrirati? ", (count) => {
+            rl.close();
+            resolve(parseInt(count));
+        });
+    });
+}
+
+// Glavna funkcija
+async function main() {
+    try {
+        console.log("Započinjem dohvat računa koji čekaju registraciju...");
+
+        const accounts = await getPendingAccounts();
+
+        if (accounts.length > 0) {
+            const numberOfAccountsToRegister = await askForAccountCount();
+
+            // Ako je broj računa manji od ukupnog broja, uzmi samo toliko računa
+            const accountsToRegister = accounts.slice(0, numberOfAccountsToRegister);
+
+            if (accountsToRegister.length > 0) {
+                for (const account of accountsToRegister) {
+                    await registerAccount(account);
+                }
+            } else {
+                console.log("Nema dovoljno računa koji čekaju registraciju.");
+            }
+        } else {
+            console.log("Nema računa koji čekaju registraciju.");
+        }
+    } catch (err) {
+        console.error("❌ Greška u glavnoj funkciji:", err);
     }
 }
 
 main().catch(console.error);
-
-*/}
