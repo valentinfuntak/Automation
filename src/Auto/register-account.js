@@ -30,12 +30,13 @@ async function registerAccount(account) {
 
         const browser = await puppeteer.launch({
             headless: false,
-            executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+            args: ['--start-maximized'],
+            executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         });
 
         const page = await browser.newPage();
         await page.goto('https://accounts.google.com/signup');
-        await page.setViewport({ width: 1080, height: 1024 });
+        await page.setViewport({ width: 1920, height: 1080 });
 
         // Popunjavanje podataka
         await page.type('#firstName', account.firstName, { delay: 100 });
@@ -46,19 +47,39 @@ async function registerAccount(account) {
         await page.waitForSelector('#month');
         await page.select('#month', account.month.toString());
 
-        await page.type('#day', account.day.toString(), { delay: 100 });
-        await page.type('#year', account.year.toString(), { delay: 100 });
+        await page.locator('#day').fill(account.day.toString(), { delay: 100 });
+        await page.locator('#year').fill(account.year.toString(), { delay: 100 });
 
         await page.waitForSelector('#gender');
         await page.select('#gender', account.gender.toString());
 
-        await page.click('#birthdaygenderNext > div > button > span');
+        await page.click('#birthdaygenderNext > div > button > div.VfPpkd-RLmnJb');
+
+        const gmailOption = await page.waitForSelector('xpath=//*[@id="selectionc1"]', { visible: true });
+        await page.evaluate(element => element.click(), gmailOption);
+
+        const next = await page.waitForSelector('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div/div/div/button/span', { visible: true });
+        await page.evaluate(element => element.click(), next);
+
+        const select = await page.waitForSelector('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[2]/div/div/div/form/span/section/div/div/div[1]/div[1]/div/span/div[3]/div/div[1]/div/div[3]/div', { visible: true });
+        await page.evaluate(element => element.click(), select);
+
+        // Unesi firstname.lastname kao email
+        const email = `${account.firstName}.${account.lastName}`; // Prilagodi domen u skladu sa stvarnim email formatom
+
+        await page.type('#yDmH0d > c-wiz > div > div.UXFQgc > div > div > div > form > span > section > div > div > div.BvCjxe > div.AFTWye > div > div.aCsJod.oJeWuf > div > div.Xb9hP > input', email, { delay: 100 });
+
+        const sumbit = await page.waitForSelector('xpath=//*[@id="next"]/div/button/span', { visible: true });
+        await page.evaluate(element => element.click(), sumbit);
+
+
+
 
         // Nastavite s popunjavanjem ostalih podataka (koristite slične metode za unos)
 
         console.log(`Račun ${account.firstName} ${account.lastName} uspješno registriran.`);
 
-        await browser.close();
+        //await browser.close();
 
         // Ažuriraj status u bazi podataka
         const { error } = await supabase
