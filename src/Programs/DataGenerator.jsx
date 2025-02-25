@@ -15,14 +15,13 @@ const generateRandomName = () => {
 const generateRandomData = () => {
     const firstName = generateRandomName(); // Nasumično ime
     const lastName = generateRandomName(); // Nasumično prezime
-    const genders = ["Muško", "Žensko"];
     const domain = "gmail.com"; // Domena je uvijek gmail.com
 
     // Generiranje nasumičnih podataka
     const month = Math.floor(Math.random() * 12) + 1; // Nasumični broj između 1 i 12
     const day = Math.floor(Math.random() * 28) + 1; // Broj dana od 1 do 28
     const year = Math.floor(Math.random() * (2003 - 1980 + 1)) + 1980; // Godine od 1980 do 2003
-    const gender = genders[Math.floor(Math.random() * genders.length)];
+    const gender = Math.floor(Math.random() * 2) + 1; // Nasumični broj 1 (Muško) ili 2 (Žensko)
     const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${domain}`;
 
     // Generiranje nasumične lozinke (8 znakova)
@@ -50,6 +49,7 @@ const generateRandomData = () => {
         registered,
     };
 };
+
 
 
 export default function DataGenerator() {

@@ -1,7 +1,6 @@
 import puppeteer from 'puppeteer';
 import { createClient } from '@supabase/supabase-js';
 import { createSignal } from 'solid-js';
-import readline from 'readline';
 
 // Supabase klijent
 const supabase = createClient("https://zwlnmgzochrpsrchtzse.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3bG5tZ3pvY2hycHNyY2h0enNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNzEzMTIsImV4cCI6MjA1NTc0NzMxMn0.zy3xpi7HVpQqrRdXuoPt6ZymK9s9ioAF5OiJIYzf3OM");
@@ -45,11 +44,13 @@ async function registerAccount(account) {
 
         // Daljnje popunjavanje (prema vašim uputama za inpute)
         await page.waitForSelector('#month');
-        await page.select('#month', '2');  // Odabir veljače
+        await page.select('#month', account.month.toString());
 
-        await page.type('#day', account.day, { delay: 100 });
-        await page.type('#year', account.year, { delay: 100 });
-        await page.select('#gender', account.gender);
+        await page.type('#day', account.day.toString(), { delay: 100 });
+        await page.type('#year', account.year.toString(), { delay: 100 });
+
+        await page.waitForSelector('#gender');
+        await page.select('#gender', account.gender.toString());
 
         await page.click('#birthdaygenderNext > div > button > span');
 
@@ -75,21 +76,6 @@ async function registerAccount(account) {
     }
 }
 
-// Funkcija za unos broja računa koji korisnik želi registrirati
-function askForAccountCount() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    return new Promise((resolve) => {
-        rl.question("Koliko računa želite registrirati? ", (count) => {
-            rl.close();
-            resolve(parseInt(count));
-        });
-    });
-}
-
 // Glavna funkcija
 async function main() {
     try {
@@ -98,17 +84,9 @@ async function main() {
         const accounts = await getPendingAccounts();
 
         if (accounts.length > 0) {
-            const numberOfAccountsToRegister = await askForAccountCount();
-
-            // Ako je broj računa manji od ukupnog broja, uzmi samo toliko računa
-            const accountsToRegister = accounts.slice(0, numberOfAccountsToRegister);
-
-            if (accountsToRegister.length > 0) {
-                for (const account of accountsToRegister) {
-                    await registerAccount(account);
-                }
-            } else {
-                console.log("Nema dovoljno računa koji čekaju registraciju.");
+            // Registriraj sve račune koji čekaju
+            for (const account of accounts) {
+                await registerAccount(account);
             }
         } else {
             console.log("Nema računa koji čekaju registraciju.");
