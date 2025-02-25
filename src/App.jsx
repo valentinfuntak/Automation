@@ -9,6 +9,7 @@ import SignIn from "../src/Pages/SignIn.jsx"
 import Home from "../src/Pages/Home.jsx"
 import Settings from "./Pages/Settings.jsx";
 import Programs from "./Pages/Programs.jsx";
+import Automation from "./Programs/Automation.jsx";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/Home" component={() => (<MainLayout><Home /></MainLayout>)} />
         <Route path="/Home/Programs" component={() => (<MainLayout><Programs /></MainLayout>)} />
         <Route path="/Home/Settings" component={() => (<MainLayout><Settings /></MainLayout>)} />
+        <Route path="/Home/Automation" component={() => (<MainLayout><Automation /></MainLayout>)} />
       </HashRouter>
     </AuthProvider>
   );
