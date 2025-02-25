@@ -2,6 +2,8 @@ import puppeteer from 'puppeteer';
 import { createClient } from '@supabase/supabase-js';
 import { createSignal } from 'solid-js';
 
+//node src/Auto/register-account.js
+
 // Supabase klijent
 const supabase = createClient("https://zwlnmgzochrpsrchtzse.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3bG5tZ3pvY2hycHNyY2h0enNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNzEzMTIsImV4cCI6MjA1NTc0NzMxMn0.zy3xpi7HVpQqrRdXuoPt6ZymK9s9ioAF5OiJIYzf3OM");
 
@@ -19,6 +21,7 @@ async function getPendingAccounts() {
     } else {
         setPendingAccounts(data);
         console.log(`Dohvaćeni računi: ${data.length}`);
+        console.log(`Dohvaćeni računi:`,pendingAccounts());
         return data;
     }
 }
@@ -65,15 +68,18 @@ async function registerAccount(account) {
         await page.evaluate(element => element.click(), select);
 
         // Unesi firstname.lastname kao email
-        const email = `${account.firstName}.${account.lastName}`; // Prilagodi domen u skladu sa stvarnim email formatom
+        const email = `${account.firstName}.${account.lastName}`;
 
         await page.type('#yDmH0d > c-wiz > div > div.UXFQgc > div > div > div > form > span > section > div > div > div.BvCjxe > div.AFTWye > div > div.aCsJod.oJeWuf > div > div.Xb9hP > input', email, { delay: 100 });
 
         const sumbit = await page.waitForSelector('xpath=//*[@id="next"]/div/button/span', { visible: true });
         await page.evaluate(element => element.click(), sumbit);
 
+        await page.locator('#passwd > div.aCsJod.oJeWuf > div > div.Xb9hP > input').fill(account.password, { delay: 100 });
+        await page.locator('#confirm-passwd > div.aCsJod.oJeWuf > div > div.Xb9hP > input').fill(account.password, { delay: 100 });
 
-
+        const sumbitpass = await page.waitForSelector('xpath=//*[@id="createpasswordNext"]/div/button/span', { visible: true });
+        await page.evaluate(element => element.click(), sumbitpass);
 
         // Nastavite s popunjavanjem ostalih podataka (koristite slične metode za unos)
 
