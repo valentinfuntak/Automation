@@ -8,7 +8,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="max-h-screen bg-gray-700 rounded-xl p-2 flex flex-col items-start justify-start text-center">
+      <div className="mt-10 sm:mt-1 max-h-screen bg-gray-700 rounded-xl p-2 flex flex-col items-start justify-start text-center">
         <h1 className="text-4xl text-white sm:text-5xl font-bold">Home</h1>
         
       </div>

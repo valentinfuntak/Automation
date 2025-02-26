@@ -32,7 +32,7 @@ export default function AccountData() {
             <For each={data()} fallback={<div class="text-red-600 text-xl">Nema podataka.</div>}>
                 {(item) => {
                     return (
-                        <div class="mt-1 flex flex-col gap-3 bg-white text-black p-6 rounded-lg shadow-lg relative">
+                        <div class="mt-10 sm:mt-1 flex flex-col gap-3 bg-white text-black p-6 rounded-lg shadow-lg relative">
                             <h2 class="text-3xl font-bold text-start text-black">Račun {item.id}</h2>
                             <p><span class="font-semibold text-blue-600">FirstName:</span> {item.firstName}</p>
                             <p><span class="font-semibold text-blue-600">LastName:</span> {item.lastName}</p>

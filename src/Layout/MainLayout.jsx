@@ -6,7 +6,7 @@ export default function MainLayout(props) {
   return (
     <div class="flex min-h-screen w-full">
       {/* Sidebar Container */}
-      <div class={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform ${sidebarOpen() ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700`}>
+      <div class={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform ${sidebarOpen() ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 mt-10 sm:mt-0 `}>
         <aside id="default-sidebar" class="h-full overflow-y-auto py-5 px-3">
           <ul class="space-y-2">
             <li>
@@ -37,19 +37,21 @@ export default function MainLayout(props) {
           </ul>
         </aside>
       </div>
-      
+
       {/* Main Content */}
       <div class="flex-1 bg-gray-900  pl-5 pr-16 py-5 lg:py-6 ml-0 sm:ml-64">
         <div class="mx-auto w-full max-w-screen-l relative">{props.children}</div>
       </div>
 
       {/* Sidebar Toggle Button for Small Screens */}
-      <button 
-        class="absolute top-4 right-4 z-50 p-3 bg-gray-800 text-white rounded-md sm:hidden"
+      <button
+        class="absolute top-0 left-0 w-full p-3 bg-gray-800 hover:bg-gray-700 text-white z-50 sm:hidden"
         onClick={() => setSidebarOpen(!sidebarOpen())}
       >
         ☰
       </button>
+
+
     </div>
   );
 }

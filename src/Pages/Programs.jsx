@@ -4,7 +4,7 @@ import DataGenerator from "../Programs/DataGenerator";
 export default function Programs() {
   return (
     <>
-      <div className="max-h-screen bg-gray-700 rounded-xl p-4 flex flex-col items-start text-start">
+      <div className="mt-10 sm:mt-1 max-h-screen bg-gray-700 rounded-xl p-4 flex flex-col items-start text-start">
         <h1 className="text-4xl text-white sm:text-5xl font-bold item-center mb-6">Programs</h1>
         {/* Kartica za DataGenerator */}
         <div className="bg-gray-800 p-4 rounded-lg shadow-lg text-white w-full max-w-sm">
