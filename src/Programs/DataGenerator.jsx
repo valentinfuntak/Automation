@@ -13,20 +13,24 @@ const generateRandomName = () => {
     return name;
 };
 
+// Funkcija za generiranje nasumične države
+const generateRandomCountry = () => {
+    const countries = ["HR", "BA", "RS", "DE", "IT", "FR", "ES", "US"];
+    return countries[Math.floor(Math.random() * countries.length)];
+};
+
 // Funkcija za generiranje nasumičnih podataka
 const generateRandomData = () => {
-    const firstName = generateRandomName(); // Nasumično ime
-    const lastName = generateRandomName(); // Nasumično prezime
-    const domain = "gmail.com"; // Domena je uvijek gmail.com
+    const firstName = generateRandomName();
+    const lastName = generateRandomName();
+    const domain = "gmail.com";
 
-    // Generiranje nasumičnih podataka
-    const month = Math.floor(Math.random() * 12) + 1; // Nasumični broj između 1 i 12
-    const day = Math.floor(Math.random() * 28) + 1; // Broj dana od 1 do 28
-    const year = Math.floor(Math.random() * (2003 - 1980 + 1)) + 1980; // Godine od 1980 do 2003
-    const gender = Math.floor(Math.random() * 2) + 1; // Nasumični broj 1 (Muško) ili 2 (Žensko)
+    const month = Math.floor(Math.random() * 12) + 1;
+    const day = Math.floor(Math.random() * 28) + 1;
+    const year = Math.floor(Math.random() * (2003 - 1980 + 1)) + 1980;
+    const gender = Math.floor(Math.random() * 2) + 1;
     const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${domain}`;
 
-    // Generiranje nasumične lozinke (8 znakova)
     const generatePassword = () => {
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         let password = "";
@@ -36,8 +40,9 @@ const generateRandomData = () => {
         return password;
     };
 
-    const password = generatePassword(); // Generiranje lozinke
-    const registered = false; // Defaultna vrijednost za registraciju
+    const password = generatePassword();
+    const registered = false;
+    const countryOfResidence = generateRandomCountry(); // Generiranje države
 
     return {
         firstName,
@@ -49,20 +54,18 @@ const generateRandomData = () => {
         email,
         password,
         registered,
+        countryOfResidence,
     };
 };
 
-
-
 export default function DataGenerator() {
-
     const navigate = useNavigate();
     const session = useAuth();
 
     const itemsPerPage = 12;
     const [numAccounts, setNumAccounts] = createSignal(1);
     const [generatedData, setGeneratedData] = createSignal([]);
-    const [existingData, setExistingData] = createSignal(new Set()); // Za praćenje postojećih podataka
+    const [existingData, setExistingData] = createSignal(new Set());
     const [currentPage, setCurrentPage] = createSignal(1);
     const startIndex = () => (currentPage() - 1) * itemsPerPage;
     const endIndex = () => currentPage() * itemsPerPage;
@@ -75,24 +78,23 @@ export default function DataGenerator() {
 
     const handleGenerate = () => {
         const data = [];
-        const tempSet = new Set(existingData()); // Kopiramo postojeće podatke
-        const tempNameSet = new Set(); // Set za praćenje dupliciranja imena i prezimena
+        const tempSet = new Set(existingData());
+        const tempNameSet = new Set();
 
         for (let i = 0; i < numAccounts(); i++) {
             let accountData = generateRandomData();
 
-            // Provjera dupliciranja emaila ili imena i prezimena
             while (tempSet.has(accountData.email) || tempNameSet.has(`${accountData.firstName} ${accountData.lastName}`)) {
-                accountData = generateRandomData(); // Ponovno generiraj podatke ako postoji dupliciranje
+                accountData = generateRandomData();
             }
 
-            tempSet.add(accountData.email); // Dodaj email u set koji prati postojeće podatke
-            tempNameSet.add(`${accountData.firstName} ${accountData.lastName}`); // Dodaj ime i prezime u set
+            tempSet.add(accountData.email);
+            tempNameSet.add(`${accountData.firstName} ${accountData.lastName}`);
             data.push(accountData);
         }
 
-        setExistingData(tempSet); // Ažuriraj set postojećih podataka
-        setGeneratedData(data); // Ažuriraj prikazane podatke
+        setExistingData(tempSet);
+        setGeneratedData(data);
     };
 
     const handleSave = async () => {
@@ -125,7 +127,7 @@ export default function DataGenerator() {
         }
     }
 
-    const handleDelete = async (id) => {
+    const handleDeleteAccount = async (id) => {
         try {
             const { data, error } = await supabase
                 .from("AccountData")
@@ -141,6 +143,18 @@ export default function DataGenerator() {
             }
         } catch (error) {
             console.error("Error during delete operation: ", error.message);
+        }
+    };
+
+    const handleDeleteAll = async () => {
+        if (confirm("Jeste li sigurni da želite obrisati sve podatke?")) {
+            try {
+                const { error } = await supabase.from("AccountData").delete().gt("id", 0);
+                if (error) throw error;
+                setData([]);
+            } catch (error) {
+                console.error("Greška prilikom brisanja svih podataka:", error);
+            }
         }
     };
 
@@ -192,19 +206,15 @@ export default function DataGenerator() {
                                 <div key={index} class="bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
                                     <div className="">
                                         <p class="font-bold text-xl">{startIndex() + index + 1}.</p> {/* Dodan redni broj */}
-                                        <div>
-                                            <p><strong>First Name:</strong> {data.id}</p>
-                                            <p><strong>First Name:</strong> {data.firstName}</p>
-                                            <p><strong>Last Name:</strong> {data.lastName}</p>
-                                        </div>
-                                        <div>
-                                            <p><strong>Date:</strong> {data.day}.{data.month}.{data.year}</p>
-                                            <p><strong>Gender:</strong> {data.gender}</p>
-                                        </div>
+                                        <p><strong>First Name:</strong> {data.firstName}</p>
+                                        <p><strong>Last Name:</strong> {data.lastName}</p>
+                                        <p><strong>Gender:</strong> {data.gender}</p>
+                                        <p><strong>Email:</strong> {data.email}</p>
+                                        <p><strong>Password:</strong> {data.password}</p>
+                                        <p><strong>Country of residence:</strong> {data.countryOfResidence}</p>
+                                        <p><strong>Date:</strong> {data.day}.{data.month}.{data.year}.</p>
+                                        <p><strong>Registered:</strong> {data.registered ? "True" : "False"}</p>
                                     </div>
-                                    <p><strong>Email:</strong> {data.email}</p>
-                                    <p><strong>Password:</strong> {data.password}</p>
-                                    <p><strong>Registered:</strong> {data.registered ? "True" : "False"}</p>
                                 </div>
                             ))}
                         </div>
@@ -230,27 +240,36 @@ export default function DataGenerator() {
                     </div>
                 )}
             </div>
-            <div class="mt-3 w-full space-y-8 bg-white shadow-lg rounded-2xl p-8 border-4 border-white">
-                <h2 class="text-3xl font-bold text-start text-gray-900">Spremljeni računi</h2>
-                <Show when={data()}>
-                    <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-4 gap-4">
-                        <For each={data().slice(startIndex(), endIndex())} fallback={<div class="text-red-600 text-xl">Nema podataka.</div>}>
-                            {(item) => {
-                                return (
+            <div>
+                <div class="mt-3 w-full space-y-8 bg-white shadow-lg rounded-2xl p-8 border-4 border-white">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-5 sm:space-y-0">
+                        <h2 class="text-3xl font-bold text-gray-900">Spremljeni računi</h2>
+                        {/* Gumb za brisanje svih podataka */}
+                        <button
+                            class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg"
+                            onClick={handleDeleteAll}
+                        >
+                            Obriši sve podatke
+                        </button>
+                    </div>
+                    <Show when={data()}>
+                        <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-4 gap-4">
+                            <For each={data().slice(startIndex(), endIndex())} fallback={<div class="text-red-600 text-xl">Nema podataka.</div>}>
+                                {(item) => (
                                     <div class="mt-1 flex flex-col gap-3 bg-gray-800 text-white p-6 rounded-lg shadow-lg relative">
                                         <p><span class="font-semibold text-indigo-200">FirstName:</span> {item.firstName}</p>
                                         <p><span class="font-semibold text-indigo-200">LastName:</span> {item.lastName}</p>
                                         <p><span class="font-semibold text-indigo-200">Gender:</span> {item.gender}</p>
                                         <p><span class="font-semibold text-indigo-200">Email:</span> {item.email}</p>
                                         <p><span class="font-semibold text-indigo-200">Password:</span> {item.password}</p>
-                                        <p><span class="font-semibold text-indigo-200">Date:</span> {item.day}. {item.month}. {item.year}</p>
+                                        <p><span class="font-semibold text-indigo-200">Country of residence:</span> {item.countryOfResidence}</p>
+                                        <p><span class="font-semibold text-indigo-200">Date:</span> {item.day}.{item.month}.{item.year}</p>
                                         <p><span class="font-semibold text-indigo-200">Registered:</span> {item.registered ? "True" : "False"}</p>
 
-                                        {/* Omot za gumbe koji ih stavlja u donji desni kut */}
                                         <div class="absolute bottom-3 right-3 flex flex-col gap-2">
                                             <button
                                                 class="bg-red-500 text-white py-2 px-2 rounded-md hover:bg-red-600 w-12 h-12 flex items-center justify-center"
-                                                onClick={() => handleDelete(item.id)}
+                                                onClick={() => handleDeleteAccount(item.id)}
                                             >
                                                 <svg class="h-8 w-8" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000">
                                                     <g id="SVGRepo_iconCarrier">
@@ -270,33 +289,30 @@ export default function DataGenerator() {
                                                 </svg>
                                             </button>
                                         </div>
-
                                     </div>
+                                )}
+                            </For>
+                        </div>
 
-                                );
-                            }}
-                        </For>
-                    </div>
-
-                    {/* Dodavanje navigacije za stranicu */}
-                    <div class="flex justify-center space-x-4 mt-6">
-                        <button
-                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
-                            disabled={currentPage() === 1}
-                            onClick={() => setCurrentPage(currentPage() - 1)}
-                        >
-                            Prethodna
-                        </button>
-                        <span class="self-center">{`Stranica ${currentPage()} od ${Math.ceil(data().length / itemsPerPage)}`}</span>
-                        <button
-                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
-                            disabled={currentPage() === Math.ceil(data().length / itemsPerPage)}
-                            onClick={() => setCurrentPage(currentPage() + 1)}
-                        >
-                            Sljedeća
-                        </button>
-                    </div>
-                </Show>
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <button
+                                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                                disabled={currentPage() === 1}
+                                onClick={() => setCurrentPage(currentPage() - 1)}
+                            >
+                                Prethodna
+                            </button>
+                            <span class="self-center">{`Stranica ${currentPage()} od ${Math.ceil(data().length / itemsPerPage)}`}</span>
+                            <button
+                                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                                disabled={currentPage() === Math.ceil(data().length / itemsPerPage)}
+                                onClick={() => setCurrentPage(currentPage() + 1)}
+                            >
+                                Sljedeća
+                            </button>
+                        </div>
+                    </Show>
+                </div>
             </div>
         </div>
     );

@@ -12,6 +12,7 @@ import Programs from "./Pages/Programs.jsx";
 import Automation from "./Programs/Automation.jsx";
 import DataGenerator from "./Programs/DataGenerator.jsx";
 import AccountData from "./Pages/AccountData.jsx";
+import Accounts from "./Pages/Accounts.jsx";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/Home/Settings" component={() => (<MainLayout><Settings /></MainLayout>)} />
         <Route path="/Home/Automation" component={() => (<MainLayout><Automation /></MainLayout>)} />
         <Route path="/Home/AccountData/:id" component={() => (<MainLayout><AccountData /></MainLayout>)} />
+        <Route path="/Home/Accounts" component={() => (<MainLayout><Accounts /></MainLayout>)} />
       </HashRouter>
     </AuthProvider>
   );
