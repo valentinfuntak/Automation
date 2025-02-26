@@ -39,7 +39,7 @@ export default function MainLayout(props) {
       </div>
 
       {/* Main Content */}
-      <div class="flex-1 bg-gray-900  pl-5 pr-16 py-5 lg:py-6 ml-0 sm:ml-64">
+      <div class="flex-1 bg-gray-900  pl-16 pr-16 py-5 lg:py-6 ml-0 sm:ml-64">
         <div class="mx-auto w-full max-w-screen-l relative">{props.children}</div>
       </div>
 

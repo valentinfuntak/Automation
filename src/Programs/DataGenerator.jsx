@@ -149,7 +149,7 @@ export default function DataGenerator() {
     };
 
     return (
-        <div class="mt-3 w-full rounded-2xl justify-start">
+        <div class=" mt-10 sm:mt-1 w-full rounded-2xl justify-start">
             <div class="w-full space-y-8 bg-white shadow-lg rounded-2xl p-8 border-4 border-white">
                 {/* Naslov */}
                 <h2 class="text-3xl font-bold text-start text-gray-900">
