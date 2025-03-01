@@ -2,33 +2,25 @@ import puppeteer from 'puppeteer';
 import { createClient } from '@supabase/supabase-js';
 import { createSignal } from 'solid-js';
 
-//node src/Auto/register-account.js
-
-// Supabase klijent
 const supabase = createClient("https://zwlnmgzochrpsrchtzse.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3bG5tZ3pvY2hycHNyY2h0enNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNzEzMTIsImV4cCI6MjA1NTc0NzMxMn0.zy3xpi7HVpQqrRdXuoPt6ZymK9s9ioAF5OiJIYzf3OM");
 
 const [pendingAccounts, setPendingAccounts] = createSignal([]);
 
-// Dohvati račune koji još nisu registrirani
+// Funkcija za nasumične pauze
+const randomDelay = (min = 300, max = 1200) => new Promise(res => setTimeout(res, Math.floor(Math.random() * (max - min) + min)));
+
 async function getPendingAccounts() {
     console.log("Pokušavam dohvatiti račune iz Supabase...");
-    const { data, error } = await supabase
-        .from('AccountData')
-        .select('*')
-        .eq('registered', false)
-        .limit(1)
-        .single(); // Uzima samo jedan zapis
+    const { data, error } = await supabase.from('AccountData').select('*').eq('registered', false).limit(1).single();
     if (error) {
         console.error('⚠️ Greška pri dohvaćanju računa:', error);
     } else {
         setPendingAccounts(data);
-        console.log(`Dohvaćeni računi: ${data.length}`);
-        console.log(`Dohvaćeni računi:`, pendingAccounts());
+        console.log(`Dohvaćen račun:`, pendingAccounts());
         return data;
     }
 }
 
-// Registracija računa pomoću Puppeteera
 async function registerAccount(account) {
     try {
         console.log(`Započinjem registraciju računa: ${account.firstName} ${account.lastName}`);
@@ -39,31 +31,42 @@ async function registerAccount(account) {
             executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         });
 
+
         const page = await browser.newPage();
         await page.goto('https://accounts.google.com/signup');
         await page.setViewport({ width: 1920, height: 1080 });
 
-        // Popunjavanje podataka
-        await page.type('#firstName', account.firstName, { delay: 100 });
-        await page.type('#lastName', account.lastName, { delay: 100 });
+        // Popunjavanje podataka s odgodama
+        await randomDelay();
+        await page.type('#firstName', account.firstName, { delay: 200 });
+        await randomDelay();
+        await page.type('#lastName', account.lastName, { delay: 200 });
+        await randomDelay();
         await page.click('#collectNameNext > div > button > span');
 
-        // Daljnje popunjavanje (prema vašim uputama za inpute)
         await page.waitForSelector('#month');
+        await randomDelay();
         await page.select('#month', account.month.toString());
+        await randomDelay();
 
-        await page.locator('#day').fill(account.day.toString(), { delay: 100 });
-        await page.locator('#year').fill(account.year.toString(), { delay: 100 });
+        await page.type('#day', account.day.toString(), { delay: 200 });
+        await randomDelay();
+        await page.type('#year', account.year.toString(), { delay: 200 });
 
         await page.waitForSelector('#gender');
+        await randomDelay();
         await page.select('#gender', account.gender.toString());
+        await randomDelay();
 
         await page.click('#birthdaygenderNext > div > button > div.VfPpkd-RLmnJb');
+        await randomDelay(1000, 2000);
 
         const gmailOption = await page.waitForSelector('xpath=//*[@id="selectionc1"]', { visible: true });
+        await randomDelay();
         await page.evaluate(element => element.click(), gmailOption);
 
         const next = await page.waitForSelector('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div/div/div/button/span', { visible: true });
+        await randomDelay();
         await page.evaluate(element => element.click(), next);
 
         const select = await page.waitForSelector('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[2]/div/div/div/form/span/section/div/div/div[1]/div[1]/div/span/div[3]/div/div[1]/div/div[3]/div', { visible: true });
@@ -76,40 +79,28 @@ async function registerAccount(account) {
 
         const sumbit = await page.waitForSelector('xpath=//*[@id="next"]/div/button/span', { visible: true });
         await page.evaluate(element => element.click(), sumbit);
+        await randomDelay(1000, 2000);
 
         await page.locator('#passwd > div.aCsJod.oJeWuf > div > div.Xb9hP > input').fill(account.password, { delay: 100 });
         await page.locator('#confirm-passwd > div.aCsJod.oJeWuf > div > div.Xb9hP > input').fill(account.password, { delay: 100 });
 
         const sumbitpass = await page.waitForSelector('xpath=//*[@id="createpasswordNext"]/div/button/span', { visible: true });
         await page.evaluate(element => element.click(), sumbitpass);
-
-        // Nastavite s popunjavanjem ostalih podataka (koristite slične metode za unos)
+        await randomDelay(2000, 3000);
 
         console.log(`Račun ${account.firstName} ${account.lastName} uspješno registriran.`);
 
-        //await browser.close();
-
-        // Ažuriraj status u bazi podataka
-        const { error } = await supabase
-            .from('AccountData')
-            .update({ registered: true })
-            .eq('id', account.id);
-        if (error) {
-            console.error(`⚠️ Greška pri ažuriranju statusa za ${account.firstName}:`, error);
-        } else {
-            console.log(`Status za račun ${account.firstName} ažuriran na 'registered'.`);
-        }
+        // Ažuriranje statusa u bazi
+        await supabase.from('AccountData').update({ registered: true }).eq('id', account.id);
     } catch (err) {
         console.error('❌ Greška pri registraciji računa:', err);
     }
 }
 
-// Glavna funkcija
 async function main() {
     try {
         console.log("Započinjem dohvat računa koji čekaju registraciju...");
-
-        const account = await getPendingAccount();
+        const account = await getPendingAccounts();
         if (account) {
             await registerAccount(account);
         } else {
