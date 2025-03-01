@@ -1,6 +1,6 @@
 import { useNavigate } from "@solidjs/router";
 import { createSignal, onCleanup } from "solid-js";
-import { supabase } from "../Supabase/Supabase.js";
+import { supabase } from "../Supabase/Supabase.js"; 
 
 export default function Accounts() {
     const navigate = useNavigate();
@@ -8,17 +8,14 @@ export default function Accounts() {
     const [error, setError] = createSignal(null);
     const [loading, setLoading] = createSignal(true);
     const [page, setPage] = createSignal(1);
-    const pageSize = 10;
+    const itemsPerPage = 10;
 
     async function handleLoad() {
         setLoading(true);
-        const from = (page() - 1) * pageSize;
-        const to = from + pageSize - 1;
-
         const { data: loadedData, error } = await supabase
             .from("AccountData")
             .select("*")
-            .range(from, to);
+            .range((page() - 1) * itemsPerPage, page() * itemsPerPage - 1);
 
         if (error) {
             setError(error.message);
@@ -33,25 +30,26 @@ export default function Accounts() {
         navigate(`/Home/AccountData/${id}`);
     }
 
-    function handleNextPage() {
-        setPage(page() + 1);
-        handleLoad();
+    function renderStatus(registered) {
+        return registered ? (
+            <span class="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
+        ) : (
+            <span class="inline-block w-3 h-3 bg-red-500 rounded-full"></span>
+        );
     }
-
-    function handlePrevPage() {
-        if (page() > 1) {
-            setPage(page() - 1);
-            handleLoad();
-        }
-    }
-
-    handleLoad();
 
     onCleanup(() => {
         setData([]);
         setError(null);
         setLoading(false);
     });
+
+    function handlePageChange(newPage) {
+        setPage(newPage);
+        handleLoad();
+    }
+
+    handleLoad();
 
     return (
         <div class="mt-10 sm:mt-1 container mx-auto">
@@ -64,17 +62,18 @@ export default function Accounts() {
                             <th class="px-6 py-3 text-sm font-semibold text-gray-600">First name</th>
                             <th class="px-6 py-3 text-sm font-semibold text-gray-600">Email</th>
                             <th class="px-6 py-3 text-sm font-semibold text-gray-600">Created At</th>
+                            <th class="px-6 py-3 text-sm font-semibold text-gray-600">Registered</th>
                             <th class="px-6 py-3 text-sm font-semibold text-gray-600">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading() ? (
                             <tr>
-                                <td colSpan="5" class="text-center py-4">Loading...</td>
+                                <td colSpan="6" class="text-center py-4">Loading...</td>
                             </tr>
                         ) : error() ? (
                             <tr>
-                                <td colSpan="5" class="text-center py-4 text-red-600">Error: {error()}</td>
+                                <td colSpan="6" class="text-center py-4 text-red-600">Error: {error()}</td>
                             </tr>
                         ) : (
                             data()?.map(account => (
@@ -84,12 +83,21 @@ export default function Accounts() {
                                     <td class="px-6 py-3 text-sm text-gray-700">{account.email}</td>
                                     <td class="px-6 py-3 text-sm text-gray-700">{new Date(account.created_at).toLocaleString()}</td>
                                     <td class="px-6 py-3 text-sm text-center">
-                                        <button
-                                            onClick={() => handleEdit(account.id)}
-                                            class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition duration-200 shadow-md"
-                                        >
-                                            Edit
-                                        </button>
+                                        <div class="flex justify-center items-center">
+                                            {renderStatus(account.registered)}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3 text-sm text-center">
+                                        <div class="flex justify-center items-center">
+                                            <button
+                                                onClick={() => handleEdit(account.id)}
+                                                class="text-blue-500 hover:text-blue-700 transition duration-200"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a3 3 0 114.242 4.242l-8.464 8.464a1.5 1.5 0 01-.41.248l-4.242 1.413a.75.75 0 01-.928-.929l1.413-4.242a1.5 1.5 0 01.248-.41l8.464-8.464z" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -97,22 +105,22 @@ export default function Accounts() {
                     </tbody>
                 </table>
             </div>
-            <div class="flex justify-between items-center mt-6">
-                <button 
-                    onClick={handlePrevPage} 
-                    disabled={page() === 1} 
-                    class="px-5 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg disabled:opacity-50 shadow-md hover:bg-gray-400 transition duration-200"
+            <div class="mt-4 flex justify-center items-center space-x-4">
+                <button
+                    onClick={() => handlePageChange(page() - 1)}
+                    disabled={page() === 1}
+                    class="px-6 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-300 transition-all duration-200 transform hover:scale-105"
                 >
                     ← Previous
                 </button>
-                <span class="text-gray-700 font-semibold">Page {page()}</span>
-                <button 
-                    onClick={handleNextPage} 
-                    class="px-5 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
+                <span class="px-4 py-2 text-lg font-medium text-gray-600">Page {page()}</span>
+                <button
+                    onClick={() => handlePageChange(page() + 1)}
+                    class="px-6 py-2 bg-blue-500 text-white rounded-lg transition-all duration-200 transform hover:scale-105"
                 >
                     Next →
                 </button>
             </div>
         </div>
     );
-};
+}
