@@ -126,7 +126,7 @@ export default function AccountData() {
                                     <p><span class="font-semibold text-blue-600">Country of residence:</span> {item.countryOfResidence}</p>
                                     <p><span class="font-semibold text-blue-600">Date:</span> {item.day}.{item.month}.{item.year}.</p>
                                     <p><span class="font-semibold text-blue-600">Registered:</span> {item.registered ? "True" : "False"}</p>
-                                    <button onClick={() => setEditing(true)} class="mt-4 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200">Uredi</button>
+                                    <button onClick={() => setEditing(true)} class="mt-4 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200">Edit</button>
                                     <button
                                         class="w-full bg-red-500 text-white py-2 px-2 rounded-md hover:bg-red-600 h-12 flex items-center justify-center"
                                         onClick={() => handleDeleteAccount(item.id)}

@@ -167,11 +167,11 @@ export default function DataGenerator() {
             <div class="w-full space-y-8 bg-white shadow-lg rounded-2xl p-8 border-4 border-white">
                 {/* Naslov */}
                 <h2 class="text-3xl font-bold text-start text-gray-900">
-                    Generiraj Račune
+                    Data generator
                 </h2>
                 {/* Broj računa */}
                 <div>
-                    <label for="num-accounts" class="block text-xl font-medium text-gray-700">Broj računa:</label>
+                    <label for="num-accounts" class="block text-xl font-medium text-gray-700">Number of accounts:</label>
                     <input
                         type="number"
                         id="num-accounts"
@@ -186,7 +186,7 @@ export default function DataGenerator() {
                     onClick={handleGenerate}
                     class="w-full py-3 px-6 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition duration-300"
                 >
-                    Generiraj podatke
+                    Generate
                 </button>
 
                 {/* Gumb za spremanje podataka u bazu */}
@@ -194,13 +194,13 @@ export default function DataGenerator() {
                     onClick={handleSave}
                     class="w-full py-3 px-6 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-300"
                 >
-                    Spremi u bazu podataka
+                    Save in DB
                 </button>
 
                 {/* Prikaz generiranih podataka */}
                 {generatedData().length > 0 && (
                     <div class="mt-8 space-y-6">
-                        <h3 class="text-xl font-semibold text-center text-gray-900">Generirani Podaci:</h3>
+                        <h3 class="text-xl font-semibold text-center text-gray-900">Generated data:</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {generatedData().slice(startIndex(), endIndex()).map((data, index) => (
                                 <div key={index} class="bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
@@ -226,15 +226,15 @@ export default function DataGenerator() {
                                 disabled={currentPage() === 1}
                                 onClick={() => setCurrentPage(currentPage() - 1)}
                             >
-                                Prethodna
+                                Previous
                             </button>
-                            <span class="self-center">{`Stranica ${currentPage()} od ${Math.ceil(generatedData().length / itemsPerPage)}`}</span>
+                            <span class="self-center">{`Page ${currentPage()} of ${Math.ceil(generatedData().length / itemsPerPage)}`}</span>
                             <button
                                 class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
                                 disabled={currentPage() === Math.ceil(generatedData().length / itemsPerPage)}
                                 onClick={() => setCurrentPage(currentPage() + 1)}
                             >
-                                Sljedeća
+                                Next
                             </button>
                         </div>
                     </div>
@@ -243,13 +243,13 @@ export default function DataGenerator() {
             <div>
                 <div class="mt-3 w-full space-y-8 bg-white shadow-lg rounded-2xl p-8 border-4 border-white">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-5 sm:space-y-0">
-                        <h2 class="text-3xl font-bold text-gray-900">Spremljeni računi</h2>
+                        <h2 class="text-3xl font-bold text-gray-900">Saved accounts</h2>
                         {/* Gumb za brisanje svih podataka */}
                         <button
                             class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg"
                             onClick={handleDeleteAll}
                         >
-                            Obriši sve podatke
+                            Delete all
                         </button>
                     </div>
                     <Show when={data()}>
@@ -300,7 +300,7 @@ export default function DataGenerator() {
                                 disabled={currentPage() === 1}
                                 onClick={() => setCurrentPage(currentPage() - 1)}
                             >
-                                Prethodna
+                                Previous
                             </button>
                             <span class="self-center">{`Stranica ${currentPage()} od ${Math.ceil(data().length / itemsPerPage)}`}</span>
                             <button
@@ -308,7 +308,7 @@ export default function DataGenerator() {
                                 disabled={currentPage() === Math.ceil(data().length / itemsPerPage)}
                                 onClick={() => setCurrentPage(currentPage() + 1)}
                             >
-                                Sljedeća
+                                Next
                             </button>
                         </div>
                     </Show>

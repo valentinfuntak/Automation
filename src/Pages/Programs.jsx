@@ -11,7 +11,7 @@ export default function Programs() {
           <h2 className="align-start text-xl font-semibold">Data Generator</h2>
           <p className="text-gray-300">Generiraj nasumične podatke za testiranje.</p>
           <A href="/Home/Programs/DataGenerator" className="mt-2 inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-            Otvori
+            Open
           </A>
         </div>
       </div>
