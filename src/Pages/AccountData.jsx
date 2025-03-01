@@ -90,6 +90,25 @@ export default function AccountData() {
         }
     };
 
+    const handleDeleteAccount = async (id) => {
+        try {
+            const { data, error } = await supabase
+                .from("AccountData")
+                .delete()
+                .eq("id", id); // Pretpostavljamo da je 'id' jedinstveni identifikator za svaki račun
+
+            if (error) {
+                console.error("Error deleting data: ", error);
+            } else {
+                console.log("Data deleted successfully");
+                // After deleting, reload the data to reflect in UI
+                await handleLoad();
+            }
+        } catch (error) {
+            console.error("Error during delete operation: ", error.message);
+        }
+    };
+
     return (
         <Show when={data()}>
             <For each={data()} fallback={<div class="text-red-600 text-xl">Nema podataka.</div>}>
@@ -108,6 +127,17 @@ export default function AccountData() {
                                     <p><span class="font-semibold text-blue-600">Date:</span> {item.day}.{item.month}.{item.year}.</p>
                                     <p><span class="font-semibold text-blue-600">Registered:</span> {item.registered ? "True" : "False"}</p>
                                     <button onClick={() => setEditing(true)} class="mt-4 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200">Uredi</button>
+                                    <button
+                                        class="w-full bg-red-500 text-white py-2 px-2 rounded-md hover:bg-red-600 h-12 flex items-center justify-center"
+                                        onClick={() => handleDeleteAccount(item.id)}
+                                    >
+                                        <svg class="h-8 w-8" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+                                            <g id="SVGRepo_iconCarrier">
+                                                <path d="M891.985346 118.062169H132.453901c-21.242549 0 7.385285 95.748636 7.385285 95.748636l81.566801 673.649991c1.372006 11.37127 9.543635 22.025821 20.586238 24.967444 4.380181 1.174396 537.768122 0.324572 542.279361-0.849825 11.176732-2.941623 19.411842-12.746348 20.783848-24.184171l79.60606-673.583439c0.002048 0.001024 28.629881-95.748636 7.323852-95.748636z" fill="#27323A"></path>
+                                                <path d="M882.18062 244.530437H142.355896c-36.960212 0-66.927288-29.967076-66.927288-66.927289s29.966052-66.927288 66.927288-66.927288h739.824724c36.960212 0 66.927288 29.966052 66.927288 66.927288-0.001024 36.961236-29.967076 66.927288-66.927288 66.927289z" fill="#27323A"></path>
+                                            </g>
+                                        </svg>
+                                    </button>
                                 </>
                             ) : (
                                 <>

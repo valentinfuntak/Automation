@@ -1,3 +1,5 @@
+//node src/Auto/register-account.js
+
 import puppeteer from 'puppeteer';
 import { createClient } from '@supabase/supabase-js';
 import { createSignal } from 'solid-js';
@@ -87,6 +89,8 @@ async function registerAccount(account) {
         const sumbitpass = await page.waitForSelector('xpath=//*[@id="createpasswordNext"]/div/button/span', { visible: true });
         await page.evaluate(element => element.click(), sumbitpass);
         await randomDelay(2000, 3000);
+
+
 
         console.log(`Račun ${account.firstName} ${account.lastName} uspješno registriran.`);
 
