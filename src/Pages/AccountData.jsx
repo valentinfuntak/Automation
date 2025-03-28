@@ -115,7 +115,7 @@ export default function AccountData() {
                 {(item) => {
                     return (
                         <div class="mt-10 sm:mt-1 flex flex-col gap-3 bg-white text-black p-6 rounded-lg shadow-lg relative">
-                            <h2 class="text-3xl font-bold text-start text-black">Račun {item.id}</h2>
+                            <h2 class="text-3xl font-bold text-start text-black">Account {item.id}</h2>
                             {!editing() ? (
                                 <>
                                     <p><span class="font-semibold text-blue-600">FirstName:</span> {item.firstName}</p>
