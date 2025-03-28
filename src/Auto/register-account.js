@@ -80,6 +80,7 @@ async function registerAccount(account) {
         await page.type('#yDmH0d > c-wiz > div > div.UXFQgc > div > div > div > form > span > section > div > div > div.BvCjxe > div.AFTWye > div > div.aCsJod.oJeWuf > div > div.Xb9hP > input', email, { delay: 100 });
 
         const sumbit = await page.waitForSelector('xpath=//*[@id="next"]/div/button/span', { visible: true });
+
         await page.evaluate(element => element.click(), sumbit);
         await randomDelay(1000, 2000);
 
@@ -89,7 +90,6 @@ async function registerAccount(account) {
         const sumbitpass = await page.waitForSelector('xpath=//*[@id="createpasswordNext"]/div/button/span', { visible: true });
         await page.evaluate(element => element.click(), sumbitpass);
         await randomDelay(2000, 3000);
-
 
 
         console.log(`Račun ${account.firstName} ${account.lastName} uspješno registriran.`);
