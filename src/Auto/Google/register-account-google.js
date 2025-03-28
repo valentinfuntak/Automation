@@ -23,7 +23,7 @@ async function getPendingAccounts() {
     }
 }
 
-async function registerAccount(account) {
+async function RegisterAccountGoogle(account) {
     try {
         console.log(`Započinjem registraciju računa: ${account.firstName} ${account.lastName}`);
 
@@ -106,7 +106,7 @@ async function main() {
         console.log("Započinjem dohvat računa koji čekaju registraciju...");
         const account = await getPendingAccounts();
         if (account) {
-            await registerAccount(account);
+            await RegisterAccountGoogle(account);
         } else {
             console.log("Nema dostupnih računa za registraciju.");
         }
